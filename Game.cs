@@ -4,37 +4,46 @@ public class Game
 {
     public int width, height;
     public bool isRunning = false;
+    public PlayerObject player;
+
+    public Game(int width, int height)
+    {
+        this.width = width;
+        this.height = height;
+
+        this.player = new(width);
+        Run();
+    }
+    public Game()
+    {
+        this.width=60;
+        this.height=40;
+
+        this.player = new(this.width);
+        Run();
+    }
 
     public void Run()
     {
         isRunning = true;
-        PlayerObject player = new(width);
-
-        new Thread(delegate ()
-        {
-            InputManager(player);
-        }).Start();
-
-        GameLoop();
+        Synchronize();
     }
-    public void InputManager(PlayerObject player)
+    public async Task Synchronize()
     {
-        while (isRunning)
+        while(isRunning)
         {
-            if (Console.KeyAvailable)
-            {
-                ConsoleKeyInfo key = Console.ReadKey(true);
-                player.Move(key.Key);
-            }
-            Thread.Sleep(250);
-        }
-    }
-    public void GameLoop()
-    {
-
-        while (isRunning)
-        {
+            await InputManager(player);
             Render();
+            Thread.Sleep(100);
+        }
+        
+    }
+    public async Task InputManager(PlayerObject player)
+    {
+        if (Console.KeyAvailable && isRunning)
+        {
+            ConsoleKeyInfo key = Console.ReadKey(true);
+            player.Move(key.Key);
         }
     }
     public void Render()
@@ -76,6 +85,7 @@ public class Game
             }
             Console.Write('\n');
         }
-        Thread.Sleep(250);
+        Console.WriteLine($"Player pos: {player.Position}");
+
     }
 }

@@ -38,7 +38,6 @@ public class PlayerObject : FlyingObject
             default:
                 break;
         }
-
     }
 
     public Rockets Shoot()
